@@ -5,7 +5,9 @@ import (
 	"log"
 	"os"
 
+	// discordgo:DiscordのAPIにアクセスするためのライブラリ
 	"github.com/bwmarrin/discordgo"
+	// godotenv: .envファイルから環境変数を読み込むためのライブラリ
 	"github.com/joho/godotenv"
 )
 
@@ -59,9 +61,11 @@ func voiceStateUpdate(s *discordgo.Session, vsu *discordgo.VoiceStateUpdate) {
 		// 退出したユーザーの情報をログに出力
 		log.Printf("User %s has left the voice channel", userID)
 
+		// メンション付きのメッセージを作成
+		mention := fmt.Sprintf("<@%s> Good job!!", userID)
+
 		// メッセージを送信
-		message := "Good job!!"
-		_, err := s.ChannelMessageSend(channelID, message)
+		_, err := s.ChannelMessageSend(channelID, mention)
 		if err != nil {
 			log.Printf("Error sending message: %v", err)
 		}
