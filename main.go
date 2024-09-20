@@ -3,6 +3,7 @@ package main
 import (
 	"fmt"
 	"log"
+	"time"
 
 	// 環境変数などのOSの機能を使うためのライブラリ
 	"os"
@@ -11,6 +12,9 @@ import (
 	// godotenv: .envファイルから環境変数を読み込むためのライブラリ
 	"github.com/joho/godotenv"
 )
+
+// ユーザーの入室時間を管理するためのマップ
+var userJoinTimes = make(map[string]time.Time)
 
 func main() {
 	// godotenv.Load()は.envファイルを読み込む関数
