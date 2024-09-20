@@ -99,7 +99,6 @@ func voiceStateUpdate(s *discordgo.Session, vsu *discordgo.VoiceStateUpdate) {
         joinTime, ok := userJoinTimes[userID]
 
 
-		// メッセージの送信
 		// if ok: ok変数は、上の行、joinTime, ok := userJoinTimes[userID] で取得した値が、マップuserJoinTimesに存在するか確認
 		// trueの場合、指定したuserIDの参加時刻がマップに存在するため実行
 		// falseの場合、このブロックは実行されない
@@ -110,14 +109,16 @@ func voiceStateUpdate(s *discordgo.Session, vsu *discordgo.VoiceStateUpdate) {
             duration := time.Since(joinTime) 
 
 			
-            // 滞在時間をメッセージとして送信
+            // メッセージをフォーマットして作成
             durationMessage := fmt.Sprintf("<@%s> Good job!! You stayed for %v.", userID, duration)
-            _, err := s.ChannelMessageSend(channelID, durationMessage) // メッセージを送信
+			// 作成したメッセージをDiscordの特定のチャンネルに送信
+            _, err := s.ChannelMessageSend(channelID, durationMessage)
+			// メッセージ送信が失敗した場合のエラーハンドリング
             if err != nil {
                 log.Printf("Error sending message: %v", err)
             }
-            // 記録を削除
-            delete(userJoinTimes, userID) // 参加時間の記録を削除
+            // ユーザーの入室時刻の記録を削除
+            delete(userJoinTimes, userID)
         } else {
             log.Printf("No join time found for user %s", userID) // 参加時刻が見つからなかった場合
         }
