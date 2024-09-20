@@ -57,44 +57,26 @@ func main() {
 	select {}
 }
 
-    // ボイスチャンネルの状態が更新されたときに呼ばれるイベントハンドラ
-	// 関数内でポインタ s を使って discord.Session の値にアクセス
-	// 関数内でポインタ vsu を使って discordgo.VoiceStateUpdate の値にアクセス
-	// それぞれセッション、入退室が保存されたメモリのアドレスで、関数内でデータを操作できる
-	// == nil は「ポインタが有効なデータを持っているかどうか」を確認するために使う
-	// vsu が nil の時、入退室イベントが発生していないと判断、関数を終了する
+// ボイスチャンネルの状態が更新されたときに呼ばれるイベントハンドラ
+    // 関数内でポインタ s を使って discord.Session の値にアクセス
+    // 関数内でポインタ vsu を使って discordgo.VoiceStateUpdate の値にアクセス
+    // それぞれセッション、入退室が保存されたメモリのアドレスで、関数内でデータを操作できる
+    // == nil は「ポインタが有効なデータを持っているかどうか」を確認するために使う
+    // vsu が nil の時、入退室イベントが発生していないと判断、関数を終了する
 func voiceStateUpdate(s *discordgo.Session, vsu *discordgo.VoiceStateUpdate) {
-	if vsu == nil {
-		log.Println("VoiceStateUpdate event is nil")
-		return
-	}
+    if vsu == nil {
+        log.Println("VoiceStateUpdate event is nil")
+        return
+    }
 
-	// ユーザーがボイスチャンネルから退出したときの処理
-	// vsu.BeforeUpdateは、discordgo.VoiceStateUpdateを参照している
-	// vsu.UserIDは、vsuの中のUserIDを参照している
-	// vsu.BeforeUpdate != nilは、入退出の状態が存在 = ユーザーの退出を表す
-	// vsu.ChannelID == "" は、ユーザーがチャンネルから抜けたことを表す
-	// sを使って、メッセージ送信、ユーザー情報の取得、イベント監視などを行う
-	if vsu.BeforeUpdate != nil && vsu.ChannelID == "" {
-		userID := vsu.UserID
-		channelID := "1278707009549631552" // メッセージを送信するチャンネルのID
+    // ユーザーがボイスチャンネルに参加した場合、時間を記録
+	// vsu.ChannelID != "": ユーザーがボイスチャンネルに参加した場合に真になる
+	// vsu.BeforeUpdate == nil: ボイスチャンネルに参加する前の状態がないか確認、ユーザーが参加したか
+    if vsu.ChannelID != "" && vsu.BeforeUpdate == nil {
+        userJoinTimes[vsu.UserID] = time.Now() // ユーザーの参加時間を記録
+        log.Printf("User %s has joined the voice channel at %v", vsu.UserID, userJoinTimes[vsu.UserID])
+        return
+    }
 
-		// 退出したユーザーの情報をログに出力
-		log.Printf("User %s has left the voice channel", userID)
-
-		// メンションを飛ばすためのメッセージ作成
-		// @sは文字列のフォーマット指定、ポインタは関係ない
-		mention := fmt.Sprintf("<@%s> Good job!!", userID)
-
-		// メッセージを送信
-		// ChannelMessageSend(channelID, mention):discordgoライブラリに用意されたメソッド
-		// 戻り値を持つ関数を２つ(送信したメッセージデータとエラー情報)を使っているが、前者は_で無視
-		_, err := s.ChannelMessageSend(channelID, mention)
-		if err != nil {
-			log.Printf("Error sending message: %v", err)
-		}
-	}
+    // 退出時の処理は含まれていない
 }
-
-
-
