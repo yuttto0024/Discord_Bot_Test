@@ -117,7 +117,7 @@ func voiceStateUpdate(s *discordgo.Session, vsu *discordgo.VoiceStateUpdate) {
                 log.Printf("Error sending message: %v", err)
             }
 
-            // ユーザーの入室時刻の記録を削除
+            // ユーザーの入室時刻の記録を削除する
             delete(userJoinTimes, userID)
         } else {
             log.Printf("No join time found for user %s", userID)
