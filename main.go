@@ -14,13 +14,22 @@ import (
 )
 
 // ユーザーの入室時間を管理するためのマップ
+// userJoinTimesという名前の変数を宣言
+// これはユーザーID（文字列型）をキー、
+// ユーザーがボイスチャンネルに参加した時刻（time.Time型）を値とするマップを作成
+// このマップを、userJoinTimesに割り当てた
 var userJoinTimes = make(map[string]time.Time)
 
 func main() {
 	// godotenv.Load():.envファイルを読み込む関数
-	// ファイル内の環境変数を読み込み、プログラムに利用できるようにする
-	// 成功するとnilを返す/失敗するとエラーとなり、エラーの詳細がerrに入る
+	// 環境変数をプログラムに利用できるようにする
+	// 成功するとnilを返し、失敗するとエラーが返る
+	// err変数にエラーの値を格納
 	err := godotenv.Load()
+	
+	// エラーが発生した場合の処理
+	// if err != nil: エラーがnilでない場合に実行される
+	// log.Fatalf()を使ってエラーメッセージを出力し、プログラムを終了する
 	if err != nil {
 		log.Fatalf(".envファイルの読み込みに失敗しました: %v", err)
 	}
